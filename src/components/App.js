@@ -22,7 +22,7 @@ class App extends Component {
     }
   }
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
+    if (this.state.contacts.length !== prevState.contacts.length) {
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
     }
   }
@@ -33,15 +33,14 @@ class App extends Component {
       name: name,
       number: number,
     };
-    if (contact.name.trim() !== '' && contact.number.trim() !== '') {
-      this.setState(prevState => {
-        if (prevState.contacts.map(data => data.name).includes(contact.name)) {
-          alert(`${contact.name} is already in contacts.`);
-          return null;
-        }
-        return { contacts: [contact, ...prevState.contacts] };
-      });
-    }
+
+    this.setState(prevState => {
+      if (prevState.contacts.map(data => data.name).includes(contact.name)) {
+        alert(`${contact.name} is already in contacts.`);
+        return null;
+      }
+      return { contacts: [contact, ...prevState.contacts] };
+    });
   };
 
   chengeFilter = e => {
@@ -56,16 +55,20 @@ class App extends Component {
 
   render() {
     const { filter, contacts } = this.state;
-    const findContacts = contacts.filter(contact =>
+    const visibleContacts = contacts.filter(contact =>
       contact.name.includes(filter),
     );
+
     return (
       <div className={s.container}>
         <h2 className={s.title}>Phonebook</h2>
         <Form onSubmit={this.addContact} />
         <h2 className={s.title}>Contacts</h2>
         <Filter value={filter} onChange={this.chengeFilter} />
-        <Contacts contactNames={findContacts} onDelete={this.deleteContact} />
+        <Contacts
+          contactNames={visibleContacts}
+          onDelete={this.deleteContact}
+        />
       </div>
     );
   }

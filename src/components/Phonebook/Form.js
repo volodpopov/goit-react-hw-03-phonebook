@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import s from './Phonebook.module.css';
 
 class Form extends Component {
@@ -9,14 +11,21 @@ class Form extends Component {
 
   handleChenge = e => {
     const { name, value } = e.currentTarget;
+
     this.setState({ [name]: value });
   };
 
   handleSubmit = e => {
-    e.preventDefault();
-    this.props.onSubmit(this.state.name, this.state.number);
+    const { name, number } = this.state;
+    const { onSubmit } = this.props;
 
-    this.setState({ name: '', number: '' });
+    e.preventDefault();
+    if (name.trim() && number.trim()) {
+      onSubmit(name, number);
+      this.setState({ name: '', number: '' });
+      return;
+    }
+    alert(`Enter name and number!`);
   };
 
   render() {
@@ -50,5 +59,9 @@ class Form extends Component {
     );
   }
 }
+
+Form.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
 
 export default Form;
